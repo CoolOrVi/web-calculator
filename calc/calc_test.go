@@ -2,43 +2,45 @@ package calc_test
 
 import (
 	"testing"
+
+	"github.com/coolorvi/web-calculator/calc"
 )
 
 func TestTokenize(t *testing.T) {
 	tests := []struct {
 		expr     string
-		expected []Token
+		expected []calc.Token
 		isError  bool
 	}{
-		{"3 + 5", []Token{
-			{Type: TokenNumber, Value: "3"},
-			{Type: TokenOperator, Value: "+"},
-			{Type: TokenNumber, Value: "5"},
+		{"3 + 5", []calc.Token{
+			{Type: calc.TokenNumber, Value: "3"},
+			{Type: calc.TokenOperator, Value: "+"},
+			{Type: calc.TokenNumber, Value: "5"},
 		}, false},
-		{"-3 + 5", []Token{
-			{Type: TokenNumber, Value: "-3"},
-			{Type: TokenOperator, Value: "+"},
-			{Type: TokenNumber, Value: "5"},
+		{"-3 + 5", []calc.Token{
+			{Type: calc.TokenNumber, Value: "-3"},
+			{Type: calc.TokenOperator, Value: "+"},
+			{Type: calc.TokenNumber, Value: "5"},
 		}, false},
-		{"(3 + 5) * 2", []Token{
-			{Type: TokenLeftParen, Value: "("},
-			{Type: TokenNumber, Value: "3"},
-			{Type: TokenOperator, Value: "+"},
-			{Type: TokenNumber, Value: "5"},
-			{Type: TokenRightParen, Value: ")"},
-			{Type: TokenOperator, Value: "*"},
-			{Type: TokenNumber, Value: "2"},
+		{"(3 + 5) * 2", []calc.Token{
+			{Type: calc.TokenLeftParen, Value: "("},
+			{Type: calc.TokenNumber, Value: "3"},
+			{Type: calc.TokenOperator, Value: "+"},
+			{Type: calc.TokenNumber, Value: "5"},
+			{Type: calc.TokenRightParen, Value: ")"},
+			{Type: calc.TokenOperator, Value: "*"},
+			{Type: calc.TokenNumber, Value: "2"},
 		}, false},
-		{"3.5 * -2", []Token{
-			{Type: TokenNumber, Value: "3.5"},
-			{Type: TokenOperator, Value: "*"},
-			{Type: TokenNumber, Value: "-2"},
+		{"3.5 * -2", []calc.Token{
+			{Type: calc.TokenNumber, Value: "3.5"},
+			{Type: calc.TokenOperator, Value: "*"},
+			{Type: calc.TokenNumber, Value: "-2"},
 		}, false},
 		{"3 + #", nil, true},
 	}
 
 	for _, test := range tests {
-		tokens, err := tokenize(test.expr)
+		tokens, err := calc.Tokenize(test.expr)
 		if test.isError {
 			if err == nil {
 				t.Errorf("expected error for expression: %s", test.expr)
@@ -63,44 +65,44 @@ func TestTokenize(t *testing.T) {
 
 func TestParseTokens(t *testing.T) {
 	tests := []struct {
-		tokens   []Token
+		tokens   []calc.Token
 		expected float64
 		isError  bool
 	}{
-		{[]Token{
-			{Type: TokenNumber, Value: "3"},
-			{Type: TokenOperator, Value: "+"},
-			{Type: TokenNumber, Value: "5"},
+		{[]calc.Token{
+			{Type: calc.TokenNumber, Value: "3"},
+			{Type: calc.TokenOperator, Value: "+"},
+			{Type: calc.TokenNumber, Value: "5"},
 		}, 8, false},
-		{[]Token{
-			{Type: TokenNumber, Value: "-3"},
-			{Type: TokenOperator, Value: "*"},
-			{Type: TokenNumber, Value: "5"},
+		{[]calc.Token{
+			{Type: calc.TokenNumber, Value: "-3"},
+			{Type: calc.TokenOperator, Value: "*"},
+			{Type: calc.TokenNumber, Value: "5"},
 		}, -15, false},
-		{[]Token{
-			{Type: TokenLeftParen, Value: "("},
-			{Type: TokenNumber, Value: "3"},
-			{Type: TokenOperator, Value: "+"},
-			{Type: TokenNumber, Value: "5"},
-			{Type: TokenRightParen, Value: ")"},
-			{Type: TokenOperator, Value: "*"},
-			{Type: TokenNumber, Value: "2"},
+		{[]calc.Token{
+			{Type: calc.TokenLeftParen, Value: "("},
+			{Type: calc.TokenNumber, Value: "3"},
+			{Type: calc.TokenOperator, Value: "+"},
+			{Type: calc.TokenNumber, Value: "5"},
+			{Type: calc.TokenRightParen, Value: ")"},
+			{Type: calc.TokenOperator, Value: "*"},
+			{Type: calc.TokenNumber, Value: "2"},
 		}, 16, false},
-		{[]Token{
-			{Type: TokenNumber, Value: "3"},
-			{Type: TokenOperator, Value: "/"},
-			{Type: TokenNumber, Value: "0"},
+		{[]calc.Token{
+			{Type: calc.TokenNumber, Value: "3"},
+			{Type: calc.TokenOperator, Value: "/"},
+			{Type: calc.TokenNumber, Value: "0"},
 		}, 0, true},
-		{[]Token{
-			{Type: TokenLeftParen, Value: "("},
-			{Type: TokenNumber, Value: "3"},
-			{Type: TokenOperator, Value: "+"},
-			{Type: TokenNumber, Value: "5"},
+		{[]calc.Token{
+			{Type: calc.TokenLeftParen, Value: "("},
+			{Type: calc.TokenNumber, Value: "3"},
+			{Type: calc.TokenOperator, Value: "+"},
+			{Type: calc.TokenNumber, Value: "5"},
 		}, 0, true},
 	}
 
 	for _, test := range tests {
-		result, err := Calc(test.tokens)
+		result, err := calc.ParseTokens(test.tokens)
 		if test.isError {
 			if err == nil {
 				t.Errorf("expected error for tokens: %+v", test.tokens)
@@ -133,7 +135,7 @@ func TestCalculatorIntegration(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		tokens, err := tokenize(test.expr)
+		tokens, err := calc.Tokenize(test.expr)
 		if err != nil {
 			if !test.isError {
 				t.Errorf("unexpected error during tokenization for expression %s: %v", test.expr, err)
@@ -141,7 +143,7 @@ func TestCalculatorIntegration(t *testing.T) {
 			continue
 		}
 
-		result, err := Calc(tokens)
+		result, err := calc.ParseTokens(tokens)
 		if test.isError {
 			if err == nil {
 				t.Errorf("expected error for expression: %s", test.expr)

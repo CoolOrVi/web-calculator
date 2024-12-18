@@ -21,7 +21,7 @@ type Token struct {
 	Value string
 }
 
-func tokenize(expr string) ([]Token, error) {
+func Tokenize(expr string) ([]Token, error) {
 	var tokens []Token
 	var currentToken strings.Builder
 
@@ -65,7 +65,7 @@ func tokenize(expr string) ([]Token, error) {
 	return tokens, nil
 }
 
-func Calc(tokens []Token) (float64, error) {
+func ParseTokens(tokens []Token) (float64, error) {
 	if len(tokens) == 0 {
 		return 0, fmt.Errorf("empty expression")
 	}
