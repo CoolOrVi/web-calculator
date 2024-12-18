@@ -2,6 +2,9 @@ package calc_test
 
 import (
 	"testing"
+
+	"github.com/coolorvi/web-calculator/calc"
+
 )
 
 func TestTokenize(t *testing.T) {
