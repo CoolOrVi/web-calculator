@@ -4,10 +4,6 @@ import (
 	"testing"
 
 	"github.com/coolorvi/web-calculator/calc"
-<<<<<<< HEAD
-=======
-
->>>>>>> 7af1bedb4683bcec5106090ca505866334dfd33d
 )
 
 func TestTokenize(t *testing.T) {
