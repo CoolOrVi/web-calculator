@@ -12,7 +12,7 @@ import (
 
 type TestCase struct {
 	Name           string
-	RequestBody    interface{} // Change to interface{} to allow different request types
+	RequestBody    interface{}
 	ExpectedStatus int
 	ExpectedBody   app.CalcResponse
 }
@@ -61,8 +61,8 @@ func TestCalculateHandler(t *testing.T) {
 			},
 		},
 		{
-			Name:           "Invalid JSON",          // Updated to handle malformed JSON
-			RequestBody:    `{"expression": 3 + 5}`, // Invalid JSON (no quotes around expression)
+			Name:           "Invalid JSON",
+			RequestBody:    `{"expression": 3 + 5}`,
 			ExpectedStatus: http.StatusBadRequest,
 			ExpectedBody: app.CalcResponse{
 				Error: "Invalid JSON",
