@@ -18,7 +18,7 @@ type CalcResponse struct {
 	Error  string `json:"error,omitempty"`
 }
 
-func calculateHandler(w http.ResponseWriter, r *http.Request) {
+func CalculateHandler(w http.ResponseWriter, r *http.Request) {
 	var req CalcRequest
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -53,10 +53,10 @@ func calculateHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func SetupRoutes() {
-	http.HandleFunc("/api/v1/calculate", calculateHandler)
+	http.HandleFunc("/api/v1/calculate", CalculateHandler)
 }
 
-func main() {
+func Start() {
 	SetupRoutes()
 	fmt.Println("Server is running on port 8080")
 	http.ListenAndServe(":8080", nil)
