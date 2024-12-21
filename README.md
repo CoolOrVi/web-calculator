@@ -14,20 +14,26 @@ __git clone https://github.com/coolorvi/web-calculator.git__
 2. Перейти в папку проекта и запустить проект командой: __go run ./cmd/main.go__
 
 ## Примеры использования
-* Запрос с успешым вычислением выражения(код 200):\
+* Запрос с успешым вычислением выражения(код 200):
+```
 curl --location 'http://localhost:8080/api/v1/calculate' \
 --header 'Content-Type: application/json' \
 --data '{
     "expression":"(1984 + (2030 - 1918)) * 404"
-}' Ответ сервера:
-{"result":"846784.000000"}
+}'
+``` 
+Ответ сервера: {"result":"846784.000000"}
+
 -----
-* Запрос с невалидным выражением(код 422):\
+* Запрос с невалидным выражением(код 422):
+```
 curl --location 'http://localhost:8080/api/v1/calculate' \
 --header 'Content-Type: application/json' \
 --data '{
     "expression":"333 - 33a"
-}' Ответ сервера: {"error":"Expression is not valid"}
+}'
+``` 
+Ответ сервера: {"error":"Expression is not valid"}
 
 
 
