@@ -28,12 +28,6 @@ curl --location 'http://localhost:8080/api/v1/calculate' \
 --data '{
     "expression":"333 - 33a"
 }' Ответ сервера: {"error":"Expression is not valid"}
-----
-* Запрос с ошибкой сервера(код 500):  
-curl --location 'http://localhost:8080/api/v1/calculate' \
---header 'Content-Type: application/json' \
---data '{
-    "expression":"10 / 0"
-}' Ответ сервера: {"error":"Internal server error"}
+
 
 

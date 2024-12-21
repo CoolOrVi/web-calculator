@@ -7,7 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/coolorvi/web-calculator/app"
+	app "github.com/coolorvi/web-calculator/web"
 )
 
 type TestCase struct {
