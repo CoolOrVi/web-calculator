@@ -7,7 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/coolorvi/web-calculator/web"
+	"github.com/coolorvi/web-calculator/app"
 )
 
 type TestCase struct {
@@ -31,7 +31,7 @@ func TestCalculateHandler(t *testing.T) {
 			},
 		},
 		{
-			Name: "Invalid character",
+			Name: "Invalid character in expression",
 			RequestBody: app.CalcRequest{
 				Expression: "3 + 5 * 2a",
 			},
@@ -45,9 +45,9 @@ func TestCalculateHandler(t *testing.T) {
 			RequestBody: app.CalcRequest{
 				Expression: "10 / 0",
 			},
-			ExpectedStatus: http.StatusInternalServerError,
+			ExpectedStatus: http.StatusUnprocessableEntity,
 			ExpectedBody: app.CalcResponse{
-				Error: "Internal server error",
+				Error: "Expression is not valid",
 			},
 		},
 		{
@@ -61,27 +61,34 @@ func TestCalculateHandler(t *testing.T) {
 			},
 		},
 		{
-			Name:           "Invalid JSON",
-			RequestBody:    `{"expression": 3 + 5}`,
-			ExpectedStatus: http.StatusBadRequest,
+			Name:           "Malformed JSON body",
+			RequestBody:    `{"expression": "3 + 5"`,
+			ExpectedStatus: http.StatusInternalServerError,
 			ExpectedBody: app.CalcResponse{
-				Error: "Invalid JSON",
+				Error: "Internal server error",
 			},
 		},
 	}
 
 	for _, test := range tests {
 		t.Run(test.Name, func(t *testing.T) {
-			body, err := json.Marshal(test.RequestBody)
-			if err != nil {
-				t.Fatalf("Failed to marshal request body: %v", err)
+			var body []byte
+			var err error
+
+			switch v := test.RequestBody.(type) {
+			case string:
+				body = []byte(v)
+			default:
+				body, err = json.Marshal(v)
+				if err != nil {
+					t.Fatalf("Failed to marshal request body: %v", err)
+				}
 			}
 
 			req := httptest.NewRequest(http.MethodPost, "/api/v1/calculate", bytes.NewBuffer(body))
 			req.Header.Set("Content-Type", "application/json")
 
 			rec := httptest.NewRecorder()
-
 			handler.ServeHTTP(rec, req)
 
 			if rec.Code != test.ExpectedStatus {

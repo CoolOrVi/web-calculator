@@ -73,8 +73,8 @@ func CalculateHandler(w http.ResponseWriter, r *http.Request) {
 	var req CalcRequest
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(CalcResponse{Error: "Expression is not valid"})
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(CalcResponse{Error: "Internal server error"})
 		return
 	}
 
@@ -94,8 +94,13 @@ func CalculateHandler(w http.ResponseWriter, r *http.Request) {
 
 	result, err := calc.ParseTokens(tokens)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(CalcResponse{Error: "Internal server error"})
+		if err.Error() == "division by zero" {
+			w.WriteHeader(http.StatusUnprocessableEntity)
+			json.NewEncoder(w).Encode(CalcResponse{Error: "Expression is not valid"})
+		} else {
+			w.WriteHeader(http.StatusInternalServerError)
+			json.NewEncoder(w).Encode(CalcResponse{Error: "Internal server error"})
+		}
 		return
 	}
 
